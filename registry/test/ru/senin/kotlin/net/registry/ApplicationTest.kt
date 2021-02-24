@@ -33,7 +33,6 @@ class ApplicationTest {
 
     init {
         Registry.users = DBUserStorage("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "org.h2.Driver")
-//        Registry.users = MemoryUserStorage()
         Registry.users.init()
     }
 
