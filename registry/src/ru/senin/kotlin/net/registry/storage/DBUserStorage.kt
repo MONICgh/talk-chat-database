@@ -57,7 +57,7 @@ class DBUserStorage(
 
     override fun containsUser(username: String): Boolean {
         return transaction {
-            !Users.select { Users.name eq username }.empty()
+            Users.select { Users.name eq username }.count() > 0
         }
     }
 
