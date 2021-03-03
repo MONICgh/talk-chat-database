@@ -1,4 +1,0 @@
-config:
-  dbType: memory
-  dbUrl: jdbc:h2:~/Documents/coding/kotlin/talk-chat-oop-argil/registry/testDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-  dbDriver: org.h2.Driver
