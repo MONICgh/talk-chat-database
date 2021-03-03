@@ -31,25 +31,16 @@ object Registry {
     lateinit var users : UserStorage
 }
 
-object ServerSpec : ConfigSpec("config") {
-    val dbType by required<String>()
-    val dbUrl by required<String>()
-    val dbDriver by required<String>()
+object ServerSpec {
+    var dbType: String? = null
+    var dbUrl: String? = null
+    var dbDriver: String? = null
 }
 
 fun main(args: Array<String>) {
 
-    // Get current path and find our config file
-    val path = Paths.get("").toAbsolutePath().toString()
-    val config = Config { addSpec(ServerSpec) }.from.yaml.file("$path/registry/resources/config.yml")
-    if (config[ServerSpec.dbType] == "database") {
-        Registry.users = DBUserStorage(config[ServerSpec.dbUrl], config[ServerSpec.dbDriver])
-    } else {
-        Registry.users = MemoryUserStorage()
-    }
-
-    Registry.users.init()
     thread {
+        sleep(60 * 1000)
         val badRequestCounter: HashMap<UserInfo, Int> = hashMapOf()
         while (true) {
             val removeList = mutableListOf<UserInfo>()
@@ -86,7 +77,6 @@ fun main(args: Array<String>) {
             for (user in removeList) {
                 Registry.users.removeUser(user.name)
             }
-            sleep(60 * 1000)
         }
     }
     EngineMain.main(args)
@@ -95,6 +85,21 @@ fun main(args: Array<String>) {
 @Suppress("UNUSED_PARAMETER")
 @JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    println("Hello")
+    ServerSpec.dbType = environment.config.propertyOrNull("ktor.database.dbType")?.getString()
+    ServerSpec.dbDriver = environment.config.propertyOrNull("ktor.database.dbDriver")?.getString()
+    ServerSpec.dbUrl = environment.config.propertyOrNull("ktor.database.dbUrl")?.getString()
+
+    if (ServerSpec.dbType == "database") {
+        if (ServerSpec.dbUrl != null && ServerSpec.dbDriver != null) {
+            Registry.users = DBUserStorage(ServerSpec.dbUrl!!, ServerSpec.dbDriver!!)
+        }
+    } else {
+        Registry.users = MemoryUserStorage()
+    }
+
+    Registry.users.init()
+
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }

@@ -10,7 +10,6 @@ dependencies {
     val ktor_version: String by project
     val logback_version: String by project
 
-    implementation(group = "com.github.uchuhimo.konf", name = "konf", version = "master-SNAPSHOT")
     implementation(project(":shared"))
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
