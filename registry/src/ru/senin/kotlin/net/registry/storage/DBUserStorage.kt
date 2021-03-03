@@ -16,18 +16,13 @@ class DBUserStorage(
     override fun init() {
         Database.connect(url, driver = driver)
         transaction {
-            addLogger(StdOutSqlLogger)
             SchemaUtils.create(Users, Addresses)
-
-            commit()
         }
-        sleep(1000) // Initializing database
     }
 
 
     private fun getAddressIdByUsername(username: String): Int? {
         return transaction {
-            addLogger(StdOutSqlLogger)
             Users
                     .select { Users.name eq username }
                     .withDistinct()
@@ -41,7 +36,6 @@ class DBUserStorage(
             throw UserWithoutAddressException()
         }
         return transaction {
-            addLogger(StdOutSqlLogger)
             Addresses
                     .select { Addresses.id eq id }
                     .withDistinct()
@@ -52,7 +46,6 @@ class DBUserStorage(
 
     override fun getUserList(): List<UserInfo> {
         return transaction {
-            addLogger(StdOutSqlLogger)
             Users.selectAll().map {
                     UserInfo(
                             it[Users.name],
@@ -64,14 +57,12 @@ class DBUserStorage(
 
     override fun containsUser(username: String): Boolean {
         return transaction {
-            addLogger(StdOutSqlLogger)
             !Users.select { Users.name eq username }.empty()
         }
     }
 
     private fun insertUser(user: UserInfo) {
         transaction {
-            addLogger(StdOutSqlLogger)
             Users.insert { newUser ->
                 newUser[name] = user.name
                 val newAddress = Addresses.insert {
@@ -81,7 +72,6 @@ class DBUserStorage(
                 }
                 newUser[addressId] = newAddress[Addresses.id]
             }
-            commit()
         }
     }
 
@@ -91,7 +81,6 @@ class DBUserStorage(
             return
         }
         transaction {
-            addLogger(StdOutSqlLogger)
             Users.update { newUser ->
                 newUser[name] = user.name
                 val newAddress = Addresses.update {
@@ -101,25 +90,20 @@ class DBUserStorage(
                 }
                 newUser[addressId] = newAddress
             }
-            commit()
         }
     }
 
     override fun removeUser(name: String) {
         transaction {
-            addLogger(StdOutSqlLogger)
             Users.deleteWhere {
                 Users.name eq name
             }
-            commit()
         }
     }
 
     override fun clearStorage() {
         transaction {
-            addLogger(StdOutSqlLogger)
             Users.deleteAll()
-            commit()
         }
     }
 }

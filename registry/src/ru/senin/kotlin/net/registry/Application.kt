@@ -1,9 +1,6 @@
 package ru.senin.kotlin.net.registry
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.uchuhimo.konf.Config
-import com.uchuhimo.konf.ConfigSpec
-import com.uchuhimo.konf.source.yaml
 import io.github.rybalkinsd.kohttp.ext.httpGet
 import io.ktor.application.*
 import io.ktor.features.*
@@ -14,7 +11,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.netty.*
 import okhttp3.Request
-import org.jetbrains.exposed.sql.*
 import org.slf4j.event.Level
 import ru.senin.kotlin.net.Protocol
 import ru.senin.kotlin.net.UserInfo
@@ -23,7 +19,6 @@ import ru.senin.kotlin.net.registry.storage.DBUserStorage
 import ru.senin.kotlin.net.registry.storage.MemoryUserStorage
 import ru.senin.kotlin.net.registry.storage.UserStorage
 import java.lang.Thread.sleep
-import java.nio.file.Paths
 import kotlin.collections.set
 import kotlin.concurrent.thread
 
@@ -85,7 +80,6 @@ fun main(args: Array<String>) {
 @Suppress("UNUSED_PARAMETER")
 @JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    println("Hello")
     ServerSpec.dbType = environment.config.propertyOrNull("ktor.database.dbType")?.getString()
     ServerSpec.dbDriver = environment.config.propertyOrNull("ktor.database.dbDriver")?.getString()
     ServerSpec.dbUrl = environment.config.propertyOrNull("ktor.database.dbUrl")?.getString()
